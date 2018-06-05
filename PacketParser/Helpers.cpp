@@ -1,5 +1,6 @@
 #include "Helpers.h"
 
+
 namespace helpers {
 	char* my_strstr(char *s2, char *s1)
 	{
@@ -67,13 +68,6 @@ namespace helpers {
 			res = res * 10 + str[i] - '0';
 		return res;
 	}
-
-	enum VAL_TYPE {
-		BOOL,
-		INT,
-		DOUBLE,
-		UNDEFINED
-	};
 
 	VAL_TYPE get_type_from_string(char* str) {
 		if (my_strstr(str, (char*)"."))

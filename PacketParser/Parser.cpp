@@ -23,6 +23,7 @@
 #define DELIMITER ';'
 #define EQUAL_SETTER '='
 
+ModulesHandler modules_handler;
 namespace bicycle_parser {
 	char buffer[BICYCLE_PACKET_SIZE];
 	char operating_buffer[BICYCLE_PACKET_SIZE];
@@ -76,14 +77,46 @@ namespace bicycle_parser {
 
 	void find_modules_in_headers() {
 		char str_counter[16];
+		char module_name[BICYCLE_HEADER_SIZE];
+		char module_type[BICYCLE_HEADER_SIZE];
+		char module_value[BICYCLE_HEADER_SIZE];
+		helpers::my_memset(str_counter, '\0', 16);
+		helpers::my_memset(module_name, '\0', BICYCLE_HEADER_SIZE);
+		helpers::my_memset(module_type, '\0', BICYCLE_HEADER_SIZE);
+		helpers::my_memset(module_value, '\0', BICYCLE_HEADER_SIZE);
 		for (uint8_t i = 0; i < header_amount; i++) {
 			if (helpers::my_strstr(headers_name[i], (char*)"module_name")) {
 				for (uint8_t j = 0; j < BICYCLE_HEADER_SIZE; j++) {
 					if (headers_name[i][j] == '-') {
+						helpers::my_memset(str_counter, '\0', 16);
 						helpers::my_strncpy(str_counter, headers_name[i] + j, 16);
 					}
 				}
-				break;
+				helpers::my_strncpy(module_name, headers_value[i], BICYCLE_HEADER_SIZE);
+			}
+			if (str_counter[0] != '\0') {
+				if (helpers::my_strstr(headers_name[i], (char*)"module_type") && helpers::my_strstr(headers_name[i], str_counter)) {
+					helpers::my_strncpy(module_type, headers_value[i], BICYCLE_HEADER_SIZE);
+				}
+				if ((helpers::my_strstr(headers_name[i], (char*)"module_value") || helpers::my_strstr(headers_name[i], (char*)"module_state")) && helpers::my_strstr(headers_name[i], str_counter)) {
+					helpers::my_strncpy(module_value, headers_value[i], BICYCLE_HEADER_SIZE);
+						bool bool_val;
+						int int_val;
+						double double_val;
+						VAL_TYPE res = helpers::parse_value(module_value, &int_val, &double_val, &bool_val);
+						if (res == INT) {
+							modules_handler.set_module_state_from_server(module_name, int_val);
+						}
+						if (res == DOUBLE) {
+							modules_handler.set_module_state_from_server(module_name, double_val);
+						}
+						if (res == BOOL) {
+							if (bool_val)
+								modules_handler.set_module_state_from_server(module_name, 1);
+							else
+								modules_handler.set_module_state_from_server(module_name, 0);
+						}
+				}
 			}
 		}
 	}
@@ -105,14 +138,15 @@ namespace bicycle_parser {
 
 }
 
-ModulesHandler modules_handler;
 
 int main() {
 	char test[1024] = "Bicycle=v0.1;device_name=hall_controller;type=ack;module_name-1=heater_trigger;module_type-1=bool_trigger;module_state-1=off;module_name-2=light_trigger;module_type-2=variadic_trigger;module_value-2=255;local_time=252624;destination=smserver;End_Bicycle";
 
-	Module test_module((char*)"test_module", 1, INT_SENSOR);
+	Module test_module((char*)"heater_trigger", 1, BOOL_TRIGGER);
 	modules_handler.add_module(test_module);
-	modules_handler.set_module_state_from_device((char*)"test_module", 10);
+	Module test_module1((char*)"light_trigger", 1, INT_TRIGGER);
+	modules_handler.add_module(test_module1);
+	//modules_handler.set_module_state_from_device((char*)"test_module", 10);
 
 	strcpy(test, "Bicycle=v0.1;device_name=hall_controller;type=ack;module_name-1=heater_trigger;module_type-1=bool_trigger;module_state-1=off;module_name-2=light_trigger;module_type-2=variadic_trigger;module_value-2=255;local_time=252624;destination=smserver;End_Bicycle");
 	for (int i = 0; i < 1024; i++) {

@@ -29,8 +29,6 @@ bool Module::SetValueFromDevice(int32_t _value)
 		_int_value = _value;
 		_time_of_change = device_state.system_time;
 		_need_validation = true;
-
-
 		return true;
 	}
 	return false;
@@ -49,7 +47,7 @@ bool Module::SetValueFromDevice(double _value)
 
 bool Module::SetValueFromServer(int32_t _value)
 {
-	if (_type == INT_TRIGGER) {
+	if (_type == INT_TRIGGER || _type == BOOL_TRIGGER) {
 		_int_value = _value;
 		_time_of_change = device_state.system_time;
 		_need_validation = true;

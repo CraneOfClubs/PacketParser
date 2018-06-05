@@ -47,7 +47,7 @@ bool ModulesHandler::set_module_state_from_server(char* name, int32_t state) {
 		return false;
 	for (uint8_t i = 0; i < modules_count; i++) {
 		if (helpers::my_strstr(modules[i].GetName(), name)) {
-			if (modules[i].GetType() == INT_SENSOR) {
+			if (modules[i].GetType() == INT_TRIGGER || modules[i].GetType() == BOOL_TRIGGER) {
 				modules[i].SetValueFromServer(state);
 			}
 		}
@@ -60,7 +60,7 @@ bool ModulesHandler::set_module_state_from_server(char* name, double state) {
 		return false;
 	for (uint8_t i = 0; i < modules_count; i++) {
 		if (helpers::my_strstr(modules[i].GetName(), name)) {
-			if (modules[i].GetType() == FLOATING_SENSOR) {
+			if (modules[i].GetType() == FLOATING_TRIGGER) {
 				modules[i].SetValueFromServer(state);
 			}
 		}
