@@ -115,14 +115,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DeviceState.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Module.cpp" />
+    <ClCompile Include="ModulesHandler.cpp" />
     <ClCompile Include="Parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeviceState.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Module.h" />
+    <ClInclude Include="ModulesHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

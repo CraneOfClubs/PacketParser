@@ -4,7 +4,9 @@
 #define DEBUG
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdint.h>
+#include "ModulesHandler.h"
 #include "Helpers.h"
+#include "Module.h"
 #ifdef DEBUG
 
 #include <cstring>
@@ -71,6 +73,21 @@ namespace bicycle_parser {
 		}
 	}
 
+
+	void find_modules_in_headers() {
+		char str_counter[16];
+		for (uint8_t i = 0; i < header_amount; i++) {
+			if (helpers::my_strstr(headers_name[i], (char*)"module_name")) {
+				for (uint8_t j = 0; j < BICYCLE_HEADER_SIZE; j++) {
+					if (headers_name[i][j] == '-') {
+						helpers::my_strncpy(str_counter, headers_name[i] + j, 16);
+					}
+				}
+				break;
+			}
+		}
+	}
+
 	void split_headers() {
 		uint16_t start_index = 0;
 		header_amount = 0;
@@ -82,13 +99,20 @@ namespace bicycle_parser {
 				start_index = i + 1;
 			}
 		}
+		find_modules_in_headers();
 	}
 
+
 }
+
+ModulesHandler modules_handler;
 
 int main() {
 	char test[1024] = "Bicycle=v0.1;device_name=hall_controller;type=ack;module_name-1=heater_trigger;module_type-1=bool_trigger;module_state-1=off;module_name-2=light_trigger;module_type-2=variadic_trigger;module_value-2=255;local_time=252624;destination=smserver;End_Bicycle";
 
+	Module test_module((char*)"test_module", 1, INT_SENSOR);
+	modules_handler.add_module(test_module);
+	modules_handler.set_module_state_from_device((char*)"test_module", 10);
 
 	strcpy(test, "Bicycle=v0.1;device_name=hall_controller;type=ack;module_name-1=heater_trigger;module_type-1=bool_trigger;module_state-1=off;module_name-2=light_trigger;module_type-2=variadic_trigger;module_value-2=255;local_time=252624;destination=smserver;End_Bicycle");
 	for (int i = 0; i < 1024; i++) {

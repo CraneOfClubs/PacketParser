@@ -16,18 +16,22 @@ enum ModuleType {
 class Module
 {
 public:
-	Module(char name[64], uint8_t id, ModuleType type);
+	Module(char* name, uint8_t id, ModuleType type);
+	Module();
 	~Module();
 	bool SetValueFromDevice(int32_t _value);
 	bool SetValueFromDevice(double _value);
 	bool SetValueFromServer(int32_t _value);
 	bool SetValueFromServer(double _value);
 	double GetDoubleValue();
+	char* GetName();
+	uint8_t GetId();
+	ModuleType GetType();
 	int32_t GetIntValue();
 	bool _need_validation = false;
 private:
 
-	Module();
+
 	uint8_t _id;
 	char _name[64];
 	int32_t _int_value;
